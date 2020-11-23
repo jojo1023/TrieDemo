@@ -28,7 +28,6 @@ int main()
         for (int i = 0; i < cmpltedStrings.size(); i++) {
             cout << cmpltedStrings[i] << endl;
         }
-        break;
     }
 }
 

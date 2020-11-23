@@ -30,7 +30,7 @@ private:
 template <class TValue>
 Trie<TValue>::Trie()
 {
-	root = new TrieNode<TValue>(NULL, 0);
+	root = new TrieNode<TValue>();
 }
 
 template <class TValue>
@@ -49,7 +49,7 @@ int Trie<TValue>::GetCount()
 template <class TValue>
 bool Trie<TValue>::ContainsKey(string key) {
 	TrieNode<TValue>* node = FindNode(key);
-	return node != NULL && node->HasValue;
+	return node != NULL && node->HasValue; 
 }
 
 template <class TValue>
@@ -77,39 +77,39 @@ void Trie<TValue>::SetValue(string key, TValue value) {
 
 template <class TValue>
 TrieNode<TValue>* Trie<TValue>::FindNode(string key) {
-	TrieNode<TValue>* currentNode = root;
-	for (int i = 0; i < key.length(); i++) {
+	TrieNode<TValue>* current = root;
+	for (int i = 0; i < key.size(); i++) {
 		char c = key[i];
-		if (currentNode->ContainsKey(c)) {
-			currentNode = currentNode->Children[c];
+		if (current->ContainsKey(c)) {
+			current = current->Children[c];
 		}
 		else {
 			return NULL;
 		}
 	}
-	return currentNode;
+	return current;
 }
 
 
 template <class TValue>
 void Trie<TValue>::Insert(string key, TValue value) {
-	TrieNode<TValue>* currentNode = root;
-	for (int i = 0; i < key.length(); i++) {
+	TrieNode<TValue>* current = root;
+	for (int i = 0; i < key.size(); i++) {
 		char c = key[i];
-		if (currentNode->ContainsKey(c)) {
-			currentNode = currentNode->Children[c];
+		if (current->ContainsKey(c)) {
+			current = current->Children[c];
 		}
 		else {
-			TrieNode<TValue>* newNode = new TrieNode<TValue>(currentNode, c);
-			currentNode->Children.insert(std::pair<char, TrieNode<TValue>*>(c, newNode));
-			currentNode = newNode;
+			TrieNode<TValue>* newNode = new TrieNode<TValue>();
+			current->Children.insert(std::pair<char, TrieNode<TValue>*>(c, newNode));
+			current = newNode;
 		}
 	}
-	if (currentNode->HasValue) {
-		throw "Key Already in Trie";
+	if (current->HasValue) {
+		throw "Key is Already In Trie";
 	}
-	currentNode->HasValue = true;
-	currentNode->Value = value;
+	current->HasValue = true;
+	current->Value = value;
 	count++;
 }
 
@@ -120,21 +120,21 @@ vector<TValue> Trie<TValue>::GetValuesWithPrefix(string prefix, int max) {
 	if (prefixNode == NULL) {
 		return values;
 	}
-	queue<TrieNode<TValue>*> nodesToSearch;
-	nodesToSearch.push(prefixNode);
-	while (nodesToSearch.size() > 0)
+	queue<TrieNode<TValue>*> queue;
+	queue.push(prefixNode);
+	while (queue.size() > 0)
 	{
-		TrieNode<TValue>* currentNode = nodesToSearch.front();
-		nodesToSearch.pop();
-		if (currentNode->HasValue) {
-			values.push_back(currentNode->Value);
-			if (max >= 0 && values.size() >= max) {
-				return values;
-			}
+		TrieNode<TValue>* node = queue.front();
+		queue.pop();
+		if (values.size() >= max) {
+			delete node;
+			continue;
 		}
-		for (auto child : currentNode->Children)
-		{
-			nodesToSearch.push(child.second);
+		if (node->HasValue) {
+			values.push_back(node->Value);
+		}
+		for (auto child : node->Children) {
+			queue.push(child.second);
 		}
 	}
 	return values;
@@ -143,13 +143,10 @@ vector<TValue> Trie<TValue>::GetValuesWithPrefix(string prefix, int max) {
 
 template <class TValue>
 bool Trie<TValue>::Remove(string key) {
-
 	TrieNode<TValue>* node = FindNode(key);
-	if (node == NULL || !node->HasValue || node == root) {
+	if (node == NULL || !node->HasValue) {
 		return false;
 	}
-
 	node->HasValue = false;
-	count--;
 	return true;
 }

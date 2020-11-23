@@ -9,22 +9,18 @@ template <class TValue>
 class TrieNode
 {
 public:
-	TrieNode(TrieNode<TValue>* parent, char key);
+	TrieNode();
 	~TrieNode();
 	TValue Value;
 	map<char, TrieNode<TValue>*> Children;
 	bool HasValue;
-	TrieNode<TValue>* Parent;
-	char Key;
 	bool ContainsKey(char key);
 };
 
 template <class TValue>
-TrieNode<TValue>::TrieNode(TrieNode<TValue>* parent, char key)
+TrieNode<TValue>::TrieNode()
 {
-	Parent = parent;
 	HasValue = false;
-	Key = key;
 }
 template <class TValue>
 TrieNode<TValue>::~TrieNode()
